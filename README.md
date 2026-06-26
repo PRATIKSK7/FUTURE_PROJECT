@@ -161,9 +161,27 @@ The application uses Clerk for robust authentication. All API routes are protect
 ## 🎓 Internship Information
 This repository is submitted as **Task 1** for the **Future Interns Prompt Engineering Internship (2026)**. It serves as a comprehensive demonstration of Full Stack Engineering, AI API Integration, and Advanced Prompt Design.
 
-## 👤 Author
-**Pratik S Kanojiya**
-- GitHub: [@pratikskanoj](https://github.com/pratikskanoj)
+## 🧑‍💻 Author Section
+
+**Pratik S Kanoj**
+
+**Artificial Intelligence & Data Science Engineer**
+
+I am a passionate AI Engineer specializing in Machine Learning, Computer Vision, and full-stack integration. I build robust, production-ready AI systems that solve real-world problems. My expertise lies in taking complex Deep Learning architectures and deploying them into scalable, user-centric web applications.
+
+**Technical Expertise:**
+
+- **AI & Data Science:** Artificial Intelligence, Machine Learning, Deep Learning, Computer Vision, Generative AI, MLOps, Data Science.
+- **Backend & Cloud:** Python, FastAPI, Docker, RESTful APIs.
+- **Frontend:** React, JavaScript, HTML, CSS, Streamlit.
+
+**Connect with me:**
+
+- 💼 **LinkedIn:** [Pratik S Kanoj](https://www.linkedin.com/in/pratik-kanoj/)
+- 🐙 **GitHub:** [github.com/PRATIKSK7](https://github.com/PRATIKSK7)
+- ✉️ **Email:** pratiksk0077@gmail.com
+
+*If you found this project interesting or helpful, please consider giving it a ⭐ on GitHub!*
 
 ## 📄 License
 This project is licensed under the MIT License.
