@@ -63,6 +63,6 @@ def client(db_session):
 @pytest.fixture
 def mock_gemini(mocker):
     """Mocks the Gemini API streaming response for AI Testing"""
-    mock_response = mocker.patch("apps.api.services.ai.gemini_provider.GeminiProvider.generate_stream")
+    mock_response = mocker.patch("services.ai.gemini_provider.GeminiProvider.generate_stream")
     mock_response.return_value = ["Mocked ", "AI ", "Response"]
     return mock_response

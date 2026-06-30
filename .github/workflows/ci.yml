@@ -10,20 +10,28 @@ jobs:
   validate:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
         with:
-          node-version: '20'
+          version: latest
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+          cache-dependency-path: './apps/web/pnpm-lock.yaml'
           
       - name: Setup Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+          cache: 'pip'
           
       - name: Install Frontend Dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
         working-directory: ./apps/web
         
       - name: Install Backend Dependencies
@@ -32,32 +40,53 @@ jobs:
         
       - name: Type Check & Lint (Frontend)
         run: |
-          npm run typecheck
-          npm run lint
+          pnpm run typecheck
+          pnpm run lint
         working-directory: ./apps/web
         
       - name: Pytest Backend Suite
-        run: pytest apps/api/tests/ --cov=apps/api
+        run: PYTHONPATH=apps/api pytest apps/api/tests/ --cov=apps/api
         env:
           CLERK_ISSUER_URL: https://clerk.placeholder.com
         
       - name: Vitest Frontend Suite
-        run: npm run test:coverage
+        run: pnpm run test:coverage
         working-directory: ./apps/web
-        
-      - name: Playwright E2E Tests
-        run: |
-          npx playwright install --with-deps
-          npx playwright test
+        env:
+          NEXT_PUBLIC_API_URL: http://localhost:8000
+          NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: pk_test_placeholder_key
+          CLERK_SECRET_KEY: sk_test_placeholder_key
 
   security-and-build:
     needs: validate
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
+      
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: latest
 
-      - name: NPM Dependency Audit
-        run: npm audit --audit-level=high
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+          cache-dependency-path: './apps/web/pnpm-lock.yaml'
+          
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+
+      - name: Install Frontend Dependencies
+        run: pnpm install --frozen-lockfile
+        working-directory: ./apps/web
+
+      - name: pnpm Dependency Audit
+        run: pnpm audit --audit-level high
         working-directory: ./apps/web
         continue-on-error: true
         

@@ -29,7 +29,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-@router.post("", response_model=ProjectResponse, status_code=status.HTTP_200_OK)
+@router.post("", response_model=ProjectResponse, status_code=status.HTTP_201_CREATED)
 def create_project(
     payload: ProjectCreate, 
     workspace_id: str = Depends(require_workspace_access),
