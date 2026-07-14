@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: copycraft-api
+    env: docker
+    dockerfilePath: ./apps/api/Dockerfile
+    plan: starter # Scale up as needed
+    healthCheckPath: /api/v1/health # Verify this endpoint exists
+    envVars:
+      - key: ENV
+        value: production
+      - key: DATABASE_URL
+        sync: false # Set manually in Render dashboard to the Neon connection string
+      - key: CLERK_ISSUER_URL
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+    autoDeploy: false # Prevent accidental deploys, trigger via GitHub Actions CD pipeline

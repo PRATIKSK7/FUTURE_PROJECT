@@ -1,0 +1,109 @@
+/*
+Global CSS
+Configures Tailwind directives and CSS variables for the application.
+Belongs in apps/web/app/
+*/
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 220 49% 8%; /* #0B1220 */
+    --foreground: 210 40% 98%; /* #F8FAFC */
+
+    --card: 217 33% 17%; /* #1E293B */
+    --card-foreground: 210 40% 98%;
+
+    --popover: 217 33% 17%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 217 91% 60%; /* #3B82F6 */
+    --primary-foreground: 210 40% 98%;
+
+    --secondary: 221 39% 11%; /* #111827 */
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 221 39% 11%;
+    --muted-foreground: 215 20% 65%; /* #94A3B8 */
+
+    --accent: 258 90% 66%; /* #8B5CF6 */
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 84% 60%; /* #EF4444 */
+    --destructive-foreground: 210 40% 98%;
+
+    --success: 160 84% 39%; /* #10B981 */
+    --success-foreground: 210 40% 98%;
+
+    --warning: 38 92% 50%; /* #F59E0B */
+    --warning-foreground: 210 40% 98%;
+
+    --border: 217 33% 25%; /* Slightly lighter than card */
+    --input: 217 33% 25%;
+    --ring: 217 91% 60%;
+
+    --radius: 1rem;
+  }
+
+  .dark {
+    /* Hardcode to dark theme since it's a premium dark theme app */
+    --background: 220 49% 8%;
+    --foreground: 210 40% 98%;
+
+    --card: 217 33% 17%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 217 33% 17%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 217 91% 60%;
+    --primary-foreground: 210 40% 98%;
+
+    --secondary: 221 39% 11%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 221 39% 11%;
+    --muted-foreground: 215 20% 65%;
+
+    --accent: 258 90% 66%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 210 40% 98%;
+
+    --success: 160 84% 39%;
+    --success-foreground: 210 40% 98%;
+
+    --warning: 38 92% 50%;
+    --warning-foreground: 210 40% 98%;
+
+    --border: 217 33% 25%;
+    --input: 217 33% 25%;
+    --ring: 217 91% 60%;
+  }
+}
+
+@layer utilities {
+  .glass {
+    @apply bg-card/40 backdrop-blur-xl border border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.1)];
+  }
+  .glass-panel {
+    @apply bg-secondary/50 backdrop-blur-2xl border border-white/5;
+  }
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent;
+  }
+  .text-gradient-cyan {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-blue-500;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}

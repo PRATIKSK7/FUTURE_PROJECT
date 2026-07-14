@@ -1,0 +1,27 @@
+version: '3.8'
+
+# Production overrides (e.g. for a VPS deployment if Render/Vercel are not used)
+services:
+  web:
+    restart: always
+    environment:
+      - NODE_ENV=production
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  api:
+    restart: always
+    environment:
+      - ENV=production
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  db:
+    restart: always
+    # In true production, this local DB service is often omitted in favor of managed RDS/Neon.

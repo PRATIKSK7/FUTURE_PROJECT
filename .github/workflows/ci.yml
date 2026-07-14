@@ -1,0 +1,110 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: latest
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+          cache-dependency-path: './apps/web/pnpm-lock.yaml'
+          
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+          
+      - name: Install Frontend Dependencies
+        run: pnpm install --frozen-lockfile
+        working-directory: ./apps/web
+        
+      - name: Install Backend Dependencies
+        run: pip install -r requirements.txt
+        working-directory: ./apps/api
+        
+      - name: Type Check & Lint (Frontend)
+        run: |
+          pnpm run typecheck
+          pnpm run lint
+        working-directory: ./apps/web
+        
+      - name: Pytest Backend Suite
+        run: PYTHONPATH=apps/api pytest apps/api/tests/ --cov=apps/api
+        env:
+          CLERK_ISSUER_URL: https://clerk.placeholder.com
+        
+      - name: Vitest Frontend Suite
+        run: pnpm run test:coverage
+        working-directory: ./apps/web
+        env:
+          NEXT_PUBLIC_API_URL: http://localhost:8000
+          NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: pk_test_placeholder_key
+          CLERK_SECRET_KEY: sk_test_placeholder_key
+
+  security-and-build:
+    needs: validate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: latest
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+          cache-dependency-path: './apps/web/pnpm-lock.yaml'
+          
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+
+      - name: Install Frontend Dependencies
+        run: pnpm install --frozen-lockfile
+        working-directory: ./apps/web
+
+      - name: pnpm Dependency Audit
+        run: pnpm audit --audit-level high
+        working-directory: ./apps/web
+        continue-on-error: true
+        
+      - name: Python Dependency Audit (Safety)
+        run: |
+          pip install safety
+          safety check -r apps/api/requirements.txt || true
+
+      - name: Verify API Docker Build
+        run: docker build -t copycraft-api:test -f apps/api/Dockerfile .
+
+      - name: Verify Web Docker Build
+        run: docker build -t copycraft-web:test -f apps/web/Dockerfile .
+
+      - name: Trivy Security Scan (API)
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'copycraft-api:test'
+          format: 'table'
+          exit-code: '0'
+          severity: 'CRITICAL,HIGH'
