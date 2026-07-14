@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Vitality Diagnostics — Accurate Diagnostics, By Evening.</title>
+  <meta name="description" content="For HSR Layout families who need reliable checkups without the wait. Doctor-reviewed reports delivered the same day." />
+  
+  <!-- Open Graph -->
+  <meta property="og:title" content="Vitality Diagnostics — Accurate Diagnostics, By Evening." />
+  <meta property="og:description" content="For HSR Layout families who need reliable checkups without the wait. Doctor-reviewed reports delivered the same day." />
+  <meta property="og:type" content="website" />
+
+  <!-- Favicon (Lucide Activity Icon) -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23FF6B4A' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2'/%3E%3C/svg%3E" />
+
+  <!-- Google Fonts — Sora (Display), Inter (Body), IBM Plex Mono (Data) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=Inter:wght@400;500;600&family=Sora:wght@600;700&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS v3 CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+            display: ['Sora', 'system-ui', 'sans-serif'],
+            mono: ['"IBM Plex Mono"', 'monospace'],
+          },
+          colors: {
+            ink: '#10241D',
+            surface: {
+              DEFAULT: '#FAF7F2',
+              alt: '#F0EBE1',
+            },
+            primary: '#0E5C4E',
+            pulse: '#FF6B4A',
+            border: '#E1DACB',
+            success: {
+              50:  '#f0fdf4',
+              100: '#dcfce7',
+              200: '#bbf7d0',
+              500: '#22c55e',
+              600: '#16a34a',
+            },
+          },
+        },
+      },
+    };
+  </script>
+
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@0.394.0/dist/umd/lucide.js"></script>
+
+  <style>
+    /* Custom utility classes */
+    .fade-in {
+      animation: fadeIn 0.6s ease-out forwards;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Pulse Line Draw Animation */
+    .pulse-draw path {
+      stroke-dasharray: 1000;
+      stroke-dashoffset: 1000;
+      animation: drawPulse 1.2s ease-out forwards;
+    }
+
+    @keyframes drawPulse {
+      to { stroke-dashoffset: 0; }
+    }
+
+    /* Section Divider Beat Animation */
+    .divider-beat {
+      position: relative;
+      overflow: hidden;
+    }
+    .divider-beat::before {
+      content: '';
+      position: absolute;
+      top: -1px;
+      left: -100%;
+      width: 50%;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, #FF6B4A, transparent);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .divider-beat.visible::before {
+      opacity: 1;
+      animation: beatTranslate 1.5s ease-in-out forwards;
+    }
+    @keyframes beatTranslate {
+      0% { left: -50%; }
+      100% { left: 150%; }
+    }
+
+    /* Card Hover Pulse Accent (Used for Services and Testimonials) */
+    .service-card {
+      position: relative;
+      transition: transform 0.25s ease, background-color 0.25s ease;
+      background-color: theme('colors.surface.DEFAULT');
+      border: 1px solid theme('colors.border');
+    }
+    .service-card::after {
+      content: '';
+      position: absolute;
+      top: -1px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 2px;
+      background-color: theme('colors.pulse');
+      transition: width 0.3s ease-out;
+    }
+    .service-card:hover {
+      transform: translateY(-2px);
+      background-color: theme('colors.white');
+    }
+    .service-card:hover::after {
+      width: 100%;
+    }
+
+    /* Form success animation */
+    .success-message {
+      animation: successPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    }
+    @keyframes successPop {
+      from { opacity: 0; transform: scale(0.95); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+
+    /* Submit Button Success Beat */
+    .btn-beat {
+      animation: successBeat 0.4s ease-out;
+    }
+    @keyframes successBeat {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); background-color: theme('colors.pulse'); }
+      100% { transform: scale(1); }
+    }
+
+    /* Hide address field by default */
+    #address-group {
+      max-height: 0;
+      overflow: hidden;
+      opacity: 0;
+      transition: max-height 0.35s ease, opacity 0.3s ease, margin 0.3s ease;
+      margin-top: 0;
+    }
+    #address-group.visible {
+      max-height: 200px;
+      opacity: 1;
+      margin-top: 1rem;
+    }
+
+    /* Scroll-triggered visibility */
+    .reveal {
+      opacity: 0;
+      transform: translateY(16px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Custom select arrow indicator */
+    select.appearance-none {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%2310241D' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m4 6 4 4 4-4'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 16px center;
+      background-size: 16px;
+      padding-right: 40px;
+    }
+
+    /* Focus ring overrides globally */
+    *:focus-visible {
+      outline: none !important;
+      box-shadow: 0 0 0 2px theme('colors.pulse') !important;
+    }
+
+    /* Reduced Motion */
+    @media (prefers-reduced-motion: reduce) {
+      .pulse-draw path { animation: fadeIn 0.6s ease-out forwards; stroke-dasharray: none; stroke-dashoffset: 0; }
+      .fade-in, .reveal, .success-message, .btn-beat, .divider-beat.visible::before, .service-card {
+        animation: none !important;
+        transition: none !important;
+        transform: none !important;
+        opacity: 1 !important;
+      }
+      .service-card:hover { transform: none; }
+      .service-card:hover::after { display: none; }
+    }
+    
+    /* Mobile sticky CTA bar transitions */
+    #mobile-cta {
+      transition: transform 0.3s ease, opacity 0.3s ease;
+      transform: translateY(0);
+      opacity: 1;
+    }
+    #mobile-cta.hidden-cta {
+      transform: translateY(100%);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    /* Mobile Menu */
+    #mobile-menu {
+      max-height: 0;
+      opacity: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease, opacity 0.3s ease;
+    }
+    #mobile-menu.open {
+      max-height: 400px;
+      opacity: 1;
+    }
+  </style>
+</head>
+
+<body class="font-sans text-ink bg-surface antialiased selection:bg-pulse/20 selection:text-ink relative">
+
+  <!-- 1. HEADER -->
+  <header id="site-header" class="fixed top-0 left-0 right-0 z-50 bg-surface/90 backdrop-blur-md border-b border-border transition-shadow duration-300">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16 md:h-20">
+        <!-- Logo -->
+        <a href="#" class="flex items-center gap-2 group focus-visible:ring-pulse rounded" aria-label="Vitality Diagnostics — Home">
+          <i data-lucide="activity" class="w-6 h-6 text-pulse"></i>
+          <span class="text-xl font-display font-bold text-ink tracking-tight">
+            Vitality<span class="text-primary">Diagnostics</span>
+          </span>
+        </a>
+
+        <!-- Desktop nav -->
+        <nav class="hidden md:flex items-center gap-8" aria-label="Main navigation">
+          <a href="#services" class="text-sm font-medium text-ink hover:text-pulse transition-colors rounded">Services</a>
+          <a href="#testimonials" class="text-sm font-medium text-ink hover:text-pulse transition-colors rounded">Reviews</a>
+          <a href="#book" class="text-sm font-medium text-ink hover:text-pulse transition-colors rounded">Book Now</a>
+          <a href="#book" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-primary text-surface text-sm font-medium hover:bg-ink transition-colors">
+            Book My Checkup
+          </a>
+        </nav>
+
+        <!-- Mobile hamburger -->
+        <button id="hamburger-btn" class="md:hidden p-2 rounded-lg hover:bg-surface-alt transition-colors" aria-label="Toggle menu" aria-expanded="false">
+          <i data-lucide="menu" class="w-6 h-6 text-ink" id="hamburger-icon"></i>
+        </button>
+      </div>
+
+      <!-- Mobile menu -->
+      <nav id="mobile-menu" class="md:hidden pb-4" aria-label="Mobile navigation">
+        <div class="flex flex-col gap-2 pt-2 border-t border-border">
+          <a href="#services" class="mobile-nav-link block px-4 py-3 rounded-lg text-ink font-medium hover:bg-surface-alt transition-colors">Services</a>
+          <a href="#testimonials" class="mobile-nav-link block px-4 py-3 rounded-lg text-ink font-medium hover:bg-surface-alt transition-colors">Reviews</a>
+          <a href="#book" class="mobile-nav-link block px-4 py-3 rounded-lg text-ink font-medium hover:bg-surface-alt transition-colors">Book Now</a>
+          <a href="#book" class="mobile-nav-link block mt-1 px-4 py-3 rounded-lg bg-primary text-surface text-center font-medium hover:bg-ink transition-colors">
+            Book My Checkup
+          </a>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <!-- 2. HERO -->
+    <!-- py-16 md:py-24 scale used across all sections -->
+    <section id="home" class="relative pt-28 md:pt-36 pb-16 md:pb-24 overflow-hidden bg-surface">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+          <!-- Copy -->
+          <div class="fade-in">
+            <h1 class="text-4xl sm:text-5xl lg:text-6xl font-display font-bold text-ink leading-[1.1] tracking-tight">
+              Accurate Diagnostics,<br />
+              <span class="text-primary">By Evening.</span>
+            </h1>
+            
+            <!-- Structural Device: ECG Pulse Line -->
+            <div class="mt-4 mb-6 text-pulse pulse-draw">
+              <svg width="120" height="30" viewBox="0 0 120 30" fill="none" xmlns="http://www.w3.org/2000/svg" class="overflow-visible">
+                <path d="M0 15 H30 L35 5 L45 25 L55 2 L65 28 L70 15 H120" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+
+            <p class="text-base sm:text-lg text-ink/80 leading-relaxed max-w-lg">
+              For HSR Layout families who need reliable checkups without the wait. Doctor-reviewed reports delivered the same day.
+            </p>
+
+            <div class="mt-8 flex flex-col sm:flex-row gap-4">
+              <a href="#book" class="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-lg bg-pulse text-white font-semibold text-base hover:bg-[#e5593c] transition-colors">
+                Book My Checkup
+              </a>
+            </div>
+
+            <!-- Redesigned Trust Badges -->
+            <div class="mt-12 flex flex-wrap gap-x-8 gap-y-4">
+              <div class="flex items-center gap-2.5">
+                <i data-lucide="shield-check" class="w-4 h-4 text-primary"></i>
+                <div class="flex flex-col">
+                  <span class="text-sm font-semibold text-ink">NABL Accredited</span>
+                  <span class="text-[11px] font-mono text-ink/70">REG. CERTIFIED</span>
+                </div>
+              </div>
+              <div class="flex items-center gap-2.5">
+                <i data-lucide="clock" class="w-4 h-4 text-primary"></i>
+                <div class="flex flex-col">
+                  <span class="text-sm font-semibold text-ink">Same-Day Reports</span>
+                  <span class="text-[11px] font-mono text-ink/70">BY 08:00 PM</span>
+                </div>
+              </div>
+              <div class="flex items-center gap-2.5">
+                <i data-lucide="home" class="w-4 h-4 text-primary"></i>
+                <div class="flex flex-col">
+                  <span class="text-sm font-semibold text-ink">Home Collection</span>
+                  <span class="text-[11px] font-mono text-ink/70">FEE ₹0.00</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Hero Image & Stat -->
+          <div class="hidden lg:block fade-in relative" style="animation-delay: 0.2s;">
+            <div class="relative rounded-lg overflow-hidden border-2 border-border">
+              <img
+                src="https://images.unsplash.com/photo-1581594693702-fbdc51b2763b?q=80&w=1000&auto=format&fit=crop"
+                alt="Modern diagnostic laboratory"
+                class="w-full h-auto object-cover aspect-[4/3]"
+                loading="eager"
+              />
+              <div class="absolute inset-0 bg-ink/5 mix-blend-multiply"></div>
+            </div>
+            
+            <!-- Mono Data Stat Card -->
+            <div class="absolute -bottom-6 -left-6 bg-surface-alt border-2 border-border p-5 rounded-lg flex items-center gap-4">
+              <div class="flex flex-col">
+                <span class="text-2xl font-mono font-semibold text-primary tracking-tight">
+                  <span id="tests-stat" data-target="10000">0</span>+
+                </span>
+                <span class="text-xs font-semibold text-ink uppercase tracking-wider mt-1">Tests Processed</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION DIVIDER (Beating Pulse) -->
+    <div class="w-full h-px bg-border divider-beat reveal"></div>
+
+    <!-- 3. SERVICES SECTION -->
+    <section id="services" class="py-16 md:py-24 bg-surface">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Tightened margin mb-8 md:mb-12 -->
+        <div class="mb-8 md:mb-12 reveal">
+          <h2 class="text-3xl font-display font-bold text-ink">
+            Diagnostics You Can Act On
+          </h2>
+          <p class="mt-3 text-ink/70 max-w-lg">
+            From routine blood work to specialist consultations — clear, affordable, and doctor-reviewed.
+          </p>
+        </div>
+
+        <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <!-- Card 1 -->
+          <div class="service-card rounded-lg p-6 flex flex-col reveal" tabindex="0">
+            <h3 class="text-lg font-display font-semibold text-ink mb-4">Full Body Checkup</h3>
+            <ul class="space-y-3 text-sm text-ink/80 flex-1">
+              <li class="flex items-start gap-2">
+                <i data-lucide="activity" class="w-4 h-4 text-primary shrink-0 mt-0.5"></i>
+                <span class="font-mono text-xs font-semibold bg-surface-alt px-1.5 py-0.5 rounded">60+</span> parameter blood panel
+              </li>
+              <li class="flex items-start gap-2">
+                <i data-lucide="check" class="w-4 h-4 text-primary shrink-0 mt-0.5"></i>
+                ECG and BMI assessment
+              </li>
+              <li class="flex items-start gap-2">
+                <i data-lucide="check" class="w-4 h-4 text-primary shrink-0 mt-0.5"></i>
+                Doctor consultation included
+              </li>
+            </ul>
+          </div>
+
+          <!-- Card 2 -->
+          <div class="service-card rounded-lg p-6 flex flex-col reveal" style="transition-delay: 100ms;" tabindex="0">
+            <h3 class="text-lg font-display font-semibold text-ink mb-4">Individual Tests</h3>
+            <ul class="space-y-3 text-sm text-ink/80 flex-1">
+              <li class="flex items-start gap-2">
+                <i data-lucide="test-tubes" class="w-4 h-4 text-primary shrink-0 mt-0.5"></i>
+                Blood, urine, &amp; stool panels
+              </li>
+              <li class="flex items-start gap-2">
+                <i data-lucide="home" class="w-4 h-4 text-primary shrink-0 mt-0.5"></i>
+                Free home sample collection
+              </li>
+              <li class="flex items-start gap-2">
+                <i data-lucide="smartphone" class="w-4 h-4 text-primary shrink-0 mt-0.5"></i>
+                Digital reporting
+              </li>
+            </ul>
+          </div>
+
+          <!-- Card 3 -->
+          <div class="service-card rounded-lg p-6 flex flex-col reveal" style="transition-delay: 200ms;" tabindex="0">
+            <h3 class="text-lg font-display font-semibold text-ink mb-4">Imaging</h3>
+            <ul class="space-y-3 text-sm text-ink/80 flex-1">
+              <li class="flex items-start gap-2">
+                <i data-lucide="scan-line" class="w-4 h-4 text-primary shrink-0 mt-0.5"></i>
+                X-ray, ultrasound, ECG
+              </li>
+              <li class="flex items-start gap-2">
+                <i data-lucide="file-check-2" class="w-4 h-4 text-primary shrink-0 mt-0.5"></i>
+                Radiologist-reviewed
+              </li>
+              <li class="flex items-start gap-2">
+                <i data-lucide="clock" class="w-4 h-4 text-primary shrink-0 mt-0.5"></i>
+                Same-day slots
+              </li>
+            </ul>
+          </div>
+
+          <!-- Card 4 -->
+          <div class="service-card rounded-lg p-6 flex flex-col reveal" style="transition-delay: 300ms;" tabindex="0">
+            <h3 class="text-lg font-display font-semibold text-ink mb-4">Consultations</h3>
+            <ul class="space-y-3 text-sm text-ink/80 flex-1">
+              <li class="flex items-start gap-2">
+                <i data-lucide="stethoscope" class="w-4 h-4 text-primary shrink-0 mt-0.5"></i>
+                General physician
+              </li>
+              <li class="flex items-start gap-2">
+                <i data-lucide="arrow-right-left" class="w-4 h-4 text-primary shrink-0 mt-0.5"></i>
+                Specialist referral
+              </li>
+              <li class="flex items-start gap-2">
+                <i data-lucide="clipboard-list" class="w-4 h-4 text-primary shrink-0 mt-0.5"></i>
+                Written next-steps
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION DIVIDER (Beating Pulse) -->
+    <div class="w-full h-px bg-border divider-beat reveal"></div>
+
+    <!-- 4. SOCIAL PROOF / CREDIBILITY SECTION -->
+    <section id="testimonials" class="py-16 md:py-24 bg-surface-alt">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="mb-8 md:mb-12 reveal text-center">
+          <h2 class="text-3xl font-display font-bold text-ink">
+            Trusted by HSR Layout Families
+          </h2>
+          <p class="mt-3 text-ink/70 max-w-lg mx-auto">
+            Real experiences from patients who chose clarity and speed over waiting rooms.
+          </p>
+        </div>
+
+        <div class="grid sm:grid-cols-3 gap-6">
+          <!-- Testimonial 1 -->
+          <div class="service-card bg-surface rounded-lg p-6 flex flex-col reveal" tabindex="0">
+            <div class="flex items-center gap-1 mb-4 text-pulse">
+              <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+              <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+              <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+              <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+              <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+            </div>
+            <p class="text-sm text-ink/80 leading-relaxed flex-1 italic mb-4">
+              "Booked a home collection at 7 AM, phlebotomist was here exactly on time. Got my lipid profile report by 4 PM on WhatsApp. Highly efficient."
+            </p>
+            <div class="border-t border-border pt-4">
+              <p class="font-display font-semibold text-sm text-ink">R. Menon</p>
+              <p class="font-mono text-[10px] text-ink/50 tracking-wider">HSR LAYOUT, SECTOR 2</p>
+            </div>
+          </div>
+
+          <!-- Testimonial 2 -->
+          <div class="service-card bg-surface rounded-lg p-6 flex flex-col reveal" style="transition-delay: 100ms;" tabindex="0">
+            <div class="flex items-center gap-1 mb-4 text-pulse">
+              <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+              <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+              <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+              <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+              <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+            </div>
+            <p class="text-sm text-ink/80 leading-relaxed flex-1 italic mb-4">
+              "Finally, a lab where the doctor actually sits down and explains what the numbers mean instead of just handing over a 10-page printout."
+            </p>
+            <div class="border-t border-border pt-4">
+              <p class="font-display font-semibold text-sm text-ink">A. Sharma</p>
+              <p class="font-mono text-[10px] text-ink/50 tracking-wider">KORAMANGALA</p>
+            </div>
+          </div>
+
+          <!-- Testimonial 3 -->
+          <div class="service-card bg-surface rounded-lg p-6 flex flex-col reveal" style="transition-delay: 200ms;" tabindex="0">
+            <div class="flex items-center gap-1 mb-4 text-pulse">
+              <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+              <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+              <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+              <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+              <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+            </div>
+            <p class="text-sm text-ink/80 leading-relaxed flex-1 italic mb-4">
+              "Very clean facility and polite staff. Went in for an ultrasound and didn't have to wait an hour past my appointment time. Reports were crystal clear."
+            </p>
+            <div class="border-t border-border pt-4">
+              <p class="font-display font-semibold text-sm text-ink">S. Krishnan</p>
+              <p class="font-mono text-[10px] text-ink/50 tracking-wider">HSR LAYOUT, SECTOR 4</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION DIVIDER (Beating Pulse) -->
+    <div class="w-full h-px bg-border divider-beat reveal"></div>
+
+    <!-- 5. BOOKING SECTION -->
+    <section id="book" class="py-16 md:py-24 bg-surface">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid lg:grid-cols-2 gap-12 lg:gap-16 items-start">
+          
+          <div class="reveal">
+            <h2 class="text-3xl font-display font-bold text-ink leading-snug">
+              Secure Your Slot
+            </h2>
+            <p class="mt-4 text-ink/80 max-w-md">
+              Book a clinic visit or schedule a free home collection. We'll instantly confirm your details.
+            </p>
+
+            <div class="mt-8 rounded-lg overflow-hidden border border-border">
+              <img
+                src="https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?q=80&w=1000&auto=format&fit=crop"
+                alt="Clinic reception"
+                class="w-full h-auto object-cover grayscale-[20%]"
+                loading="lazy"
+              />
+            </div>
+          </div>
+
+          <div class="reveal" style="transition-delay: 0.15s;">
+            <div class="bg-surface-alt rounded-xl border border-border p-6 sm:p-8 shadow-sm relative z-10" id="booking-container">
+              <form id="booking-form" novalidate>
+                <!-- Group 1: Details -->
+                <div class="space-y-5 mb-8">
+                  <h3 class="text-sm font-semibold uppercase tracking-wider text-ink/50 border-b border-border pb-2">Patient Details</h3>
+                  
+                  <div>
+                    <label for="patient-name" class="block text-sm font-medium text-ink mb-1.5">Full Name</label>
+                    <input type="text" id="patient-name" name="name" required placeholder="e.g. Priya Sharma"
+                      class="w-full px-4 py-3 rounded border border-border bg-surface text-ink placeholder-ink/40 focus:bg-white transition-colors" />
+                    <p class="error-msg hidden text-xs text-pulse mt-1.5 font-mono">ERR: MISSING_NAME</p>
+                  </div>
+
+                  <div>
+                    <label for="patient-phone" class="block text-sm font-medium text-ink mb-1.5">Phone Number</label>
+                    <input type="tel" id="patient-phone" name="phone" required placeholder="9876543210" maxlength="10"
+                      class="w-full px-4 py-3 rounded border border-border bg-surface text-ink placeholder-ink/40 font-mono focus:bg-white transition-colors" />
+                    <p class="error-msg hidden text-xs text-pulse mt-1.5 font-mono">ERR: INVALID_PHONE_10_DIGITS</p>
+                  </div>
+                </div>
+
+                <!-- Group 2: Requirements -->
+                <div class="space-y-5 mb-8">
+                  <h3 class="text-sm font-semibold uppercase tracking-wider text-ink/50 border-b border-border pb-2">Service Selection</h3>
+
+                  <div>
+                    <label for="test-package" class="block text-sm font-medium text-ink mb-1.5">Test / Package</label>
+                    <select id="test-package" name="package" required
+                      class="w-full px-4 py-3 rounded border border-border bg-surface text-ink appearance-none focus:bg-white transition-colors cursor-pointer">
+                      <option value="" disabled selected>Select a package</option>
+                      <option value="full-body-checkup">Full Body Health Checkup</option>
+                      <option value="individual-test">Individual Diagnostic Test</option>
+                      <option value="imaging-radiology">Imaging &amp; Radiology</option>
+                      <option value="doctor-consultation">Doctor Consultation</option>
+                    </select>
+                    <p class="error-msg hidden text-xs text-pulse mt-1.5 font-mono">ERR: PACKAGE_REQUIRED</p>
+                  </div>
+
+                  <div>
+                    <label class="block text-sm font-medium text-ink mb-2">Collection Type</label>
+                    <div class="flex gap-6">
+                      <label class="flex items-center gap-2 cursor-pointer">
+                        <input type="radio" name="collection-type" value="visit-clinic" class="w-4 h-4 text-pulse bg-surface border-border focus:ring-pulse" checked />
+                        <span class="text-sm text-ink">Visit Clinic</span>
+                      </label>
+                      <label class="flex items-center gap-2 cursor-pointer">
+                        <input type="radio" name="collection-type" value="home-collection" class="w-4 h-4 text-pulse bg-surface border-border focus:ring-pulse" />
+                        <span class="text-sm text-ink">Home Collection</span>
+                      </label>
+                    </div>
+                  </div>
+
+                  <div id="address-group">
+                    <label for="patient-address" class="block text-sm font-medium text-ink mb-1.5">Collection Address</label>
+                    <textarea id="patient-address" name="address" rows="2" placeholder="Full address"
+                      class="w-full px-4 py-3 rounded border border-border bg-surface text-ink placeholder-ink/40 focus:bg-white transition-colors resize-none"></textarea>
+                    <p class="error-msg hidden text-xs text-pulse mt-1.5 font-mono">ERR: ADDRESS_REQUIRED</p>
+                  </div>
+                </div>
+
+                <!-- Group 3: Schedule -->
+                <div class="space-y-5 mb-8">
+                  <h3 class="text-sm font-semibold uppercase tracking-wider text-ink/50 border-b border-border pb-2">Scheduling</h3>
+                  
+                  <div class="grid sm:grid-cols-2 gap-4">
+                    <div>
+                      <label for="preferred-date" class="block text-sm font-medium text-ink mb-1.5">Date</label>
+                      <input type="date" id="preferred-date" name="date" required
+                        class="w-full px-4 py-3 rounded border border-border bg-surface text-ink font-mono focus:bg-white transition-colors" />
+                      <p class="error-msg hidden text-xs text-pulse mt-1.5 font-mono">ERR: DATE_REQUIRED</p>
+                    </div>
+                    <div>
+                      <label for="preferred-time" class="block text-sm font-medium text-ink mb-1.5">Time Slot</label>
+                      <select id="preferred-time" name="time" required
+                        class="w-full px-4 py-3 rounded border border-border bg-surface text-ink font-mono appearance-none focus:bg-white transition-colors cursor-pointer">
+                        <option value="" disabled selected>--:--</option>
+                        <option value="07:00-08:00">07:00 - 08:00</option>
+                        <option value="08:00-09:00">08:00 - 09:00</option>
+                        <option value="09:00-10:00">09:00 - 10:00</option>
+                        <option value="10:00-11:00">10:00 - 11:00</option>
+                        <option value="11:00-12:00">11:00 - 12:00</option>
+                        <option value="14:00-15:00">14:00 - 15:00</option>
+                        <option value="15:00-16:00">15:00 - 16:00</option>
+                        <option value="16:00-17:00">16:00 - 17:00</option>
+                      </select>
+                      <p class="error-msg hidden text-xs text-pulse mt-1.5 font-mono">ERR: TIME_REQUIRED</p>
+                    </div>
+                  </div>
+                </div>
+
+                <button type="submit" id="submit-btn"
+                  class="w-full flex items-center justify-center gap-2 px-6 py-4 rounded bg-primary text-surface font-medium hover:bg-ink transition-colors disabled:opacity-70 disabled:hover:bg-primary">
+                  <span id="submit-text">Confirm Booking</span>
+                  <i data-lucide="arrow-right" class="w-4 h-4" id="submit-icon"></i>
+                </button>
+                <p id="form-error-msg" class="hidden text-sm text-pulse font-mono text-center mt-3"></p>
+              </form>
+
+              <!-- Success Message -->
+              <div id="booking-success" class="hidden mt-4">
+                <div class="success-message text-center p-6 bg-surface border border-border rounded">
+                  <i data-lucide="check" class="w-10 h-10 text-primary mx-auto mb-3"></i>
+                  <h3 class="text-lg font-display font-bold text-ink">Request Confirmed</h3>
+                  <p class="mt-2 text-sm text-ink/80">
+                    Patient: <span id="confirm-name" class="font-mono font-medium text-ink"></span><br />
+                    Package: <span id="confirm-package" class="font-mono font-medium text-ink"></span><br />
+                    We'll call <span id="confirm-phone" class="font-mono font-medium text-ink"></span> shortly.
+                  </p>
+                  <button id="book-another-btn" type="button"
+                    class="mt-6 inline-flex items-center gap-2 text-primary font-medium hover:text-pulse transition-colors">
+                    <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+                    Start New Booking
+                  </button>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- 6. FOOTER -->
+  <footer class="bg-ink relative overflow-hidden pt-16 pb-8 border-t-4 border-pulse pb-24 md:pb-8">
+    <!-- Pulse Watermark -->
+    <div class="absolute inset-0 pointer-events-none opacity-5 flex items-center justify-center -z-0">
+      <svg width="100%" height="200" preserveAspectRatio="none" viewBox="0 0 1000 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M0 100 H300 L350 20 L450 180 L550 50 L650 150 L700 100 H1000" stroke="#FAF7F2" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-10 pb-10 border-b border-surface/10">
+        
+        <div>
+          <div class="flex items-center gap-2 mb-4">
+            <i data-lucide="activity" class="w-6 h-6 text-pulse"></i>
+            <span class="text-xl font-display font-bold text-surface tracking-tight">
+              Vitality<span class="text-primary">Diagnostics</span>
+            </span>
+          </div>
+          <p class="text-sm text-surface/60 max-w-xs">
+            Clinical accuracy you can trust. Serving HSR Layout with same-day reports.
+          </p>
+        </div>
+
+        <div>
+          <h4 class="text-xs font-mono text-surface/40 uppercase tracking-widest mb-4">Navigation</h4>
+          <ul class="space-y-3">
+            <li><a href="#services" class="text-sm text-surface hover:text-pulse transition-colors rounded">Services</a></li>
+            <li><a href="#book" class="text-sm text-surface hover:text-pulse transition-colors rounded">Book a Checkup</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="text-xs font-mono text-surface/40 uppercase tracking-widest mb-4">Contact</h4>
+          <ul class="space-y-3">
+            <li class="flex items-start gap-2">
+              <span class="font-mono text-xs text-pulse mt-0.5 shrink-0">LOC</span>
+              <span class="text-sm text-surface">123, 14th Cross, HSR Layout</span>
+            </li>
+            <li class="flex items-center gap-2">
+              <span class="font-mono text-xs text-pulse shrink-0">TEL</span>
+              <a href="tel:+919876543210" class="text-sm font-mono text-surface hover:text-pulse transition-colors rounded">+91 98765 43210</a>
+            </li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="text-xs font-mono text-surface/40 uppercase tracking-widest mb-4">Cert</h4>
+          <div class="flex items-center gap-3">
+            <i data-lucide="shield-check" class="w-6 h-6 text-primary"></i>
+            <div>
+              <p class="text-sm text-surface font-medium">NABL Accredited</p>
+              <p class="text-xs font-mono text-surface/50">REG. XXXXXX</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="pt-6 flex justify-between items-center text-xs text-surface/40">
+        <p>&copy; <span id="copyright-year"></span> Vitality Diagnostics</p>
+        <p class="font-mono uppercase tracking-widest">Sys_Online</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- MOBILE STICKY CTA -->
+  <div id="mobile-cta" class="md:hidden fixed bottom-0 inset-x-0 bg-surface/90 backdrop-blur-md border-t border-border p-4 z-40 hidden-cta">
+    <a href="#book" class="flex items-center justify-center gap-2 w-full px-6 py-3.5 rounded bg-primary text-surface font-medium hover:bg-ink transition-colors">
+      Book My Checkup
+    </a>
+  </div>
+
+  <!-- JAVASCRIPT -->
+  <script>
+  document.addEventListener('DOMContentLoaded', function() {
+    if (typeof lucide !== 'undefined' && lucide.createIcons) {
+      lucide.createIcons();
+    }
+
+    document.getElementById('copyright-year').textContent = new Date().getFullYear();
+
+    const dateInput = document.getElementById('preferred-date');
+    const today = new Date().toISOString().split('T')[0];
+    dateInput.setAttribute('min', today);
+
+    const header = document.getElementById('site-header');
+    window.addEventListener('scroll', () => {
+      header.classList.toggle('shadow-sm', window.scrollY > 10);
+    }, { passive: true });
+
+    // Mobile menu toggle
+    const hamburgerBtn  = document.getElementById('hamburger-btn');
+    const mobileMenu    = document.getElementById('mobile-menu');
+    const hamburgerIcon = document.getElementById('hamburger-icon');
+    let menuOpen = false;
+
+    hamburgerBtn.addEventListener('click', () => {
+      menuOpen = !menuOpen;
+      mobileMenu.classList.toggle('open', menuOpen);
+      hamburgerBtn.setAttribute('aria-expanded', menuOpen);
+      hamburgerIcon.setAttribute('data-lucide', menuOpen ? 'x' : 'menu');
+      lucide.createIcons();
+    });
+
+    document.querySelectorAll('.mobile-nav-link').forEach(link => {
+      link.addEventListener('click', () => {
+        menuOpen = false;
+        mobileMenu.classList.remove('open');
+        hamburgerBtn.setAttribute('aria-expanded', 'false');
+        hamburgerIcon.setAttribute('data-lucide', 'menu');
+        lucide.createIcons();
+      });
+    });
+
+    // Collection type toggle
+    const addressGroup = document.getElementById('address-group');
+    const addressInput = document.getElementById('patient-address');
+    const collectionRadios = document.querySelectorAll('input[name="collection-type"]');
+
+    collectionRadios.forEach(radio => {
+      radio.addEventListener('change', (e) => {
+        if (e.target.value === 'home-collection') {
+          addressGroup.classList.add('visible');
+          addressInput.setAttribute('required', '');
+        } else {
+          addressGroup.classList.remove('visible');
+          addressInput.removeAttribute('required');
+          addressInput.value = '';
+          addressGroup.querySelector('.error-msg')?.classList.add('hidden');
+        }
+      });
+    });
+
+    // Form Submission & Validation
+    const form           = document.getElementById('booking-form');
+    const successBlock   = document.getElementById('booking-success');
+    const bookAnotherBtn = document.getElementById('book-another-btn');
+    const phoneRegex     = /^[6-9]\d{9}$/;
+
+    function clearErrors() {
+      form.querySelectorAll('.error-msg').forEach(el => el.classList.add('hidden'));
+      form.querySelectorAll('input, select, textarea').forEach(el => {
+        el.classList.remove('border-pulse', 'ring-pulse/30');
+      });
+    }
+
+    function showError(field) {
+      const parent = field.closest('div');
+      const errMsg = parent?.querySelector('.error-msg');
+      if (errMsg) errMsg.classList.remove('hidden');
+      field.classList.add('border-pulse');
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      clearErrors();
+      
+      const submitBtn = document.getElementById('submit-btn');
+      const submitText = document.getElementById('submit-text');
+      const submitIcon = document.getElementById('submit-icon');
+      const formErrorMsg = document.getElementById('form-error-msg');
+      formErrorMsg.classList.add('hidden');
+
+      const name        = document.getElementById('patient-name');
+      const phone       = document.getElementById('patient-phone');
+      const pkg         = document.getElementById('test-package');
+      const date        = document.getElementById('preferred-date');
+      const time        = document.getElementById('preferred-time');
+      const collection  = document.querySelector('input[name="collection-type"]:checked');
+      const isHome      = collection && collection.value === 'home-collection';
+
+      let valid = true;
+
+      if (!name.value.trim()) { showError(name); valid = false; }
+      if (!phoneRegex.test(phone.value.trim())) { showError(phone); valid = false; }
+      if (!pkg.value) { showError(pkg); valid = false; }
+      if (!date.value) { showError(date); valid = false; }
+      if (!time.value) { showError(time); valid = false; }
+      if (isHome && !addressInput.value.trim()) { showError(addressInput); valid = false; }
+
+      if (!valid) return;
+
+      submitBtn.disabled = true;
+      submitText.textContent = 'Processing...';
+      submitIcon.setAttribute('data-lucide', 'loader-2');
+      submitIcon.classList.add('animate-spin');
+      lucide.createIcons();
+
+      const pkgLabel = pkg.options[pkg.selectedIndex].text;
+
+      try {
+        const response = await fetch('http://localhost:3000/api/book', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            fullName: name.value.trim(),
+            phoneNumber: phone.value.trim(),
+            package: pkgLabel,
+            collectionType: collection.value,
+            address: isHome ? addressInput.value.trim() : 'N/A',
+            preferredDate: date.value,
+            timeSlot: time.options[time.selectedIndex].text
+          })
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(errorData.error || 'ERR: SUBMISSION_FAILED');
+        }
+
+        document.getElementById('confirm-name').textContent    = name.value.trim();
+        document.getElementById('confirm-phone').textContent   = phone.value.trim();
+        document.getElementById('confirm-package').textContent  = pkgLabel;
+
+        form.classList.add('hidden');
+        successBlock.classList.remove('hidden');
+        
+        successBlock.querySelector('.success-message').classList.add('btn-beat');
+
+      } catch (err) {
+        // Ensure micro-copy error format is consistent
+        formErrorMsg.textContent = err.message || 'ERR: NETWORK_FAILURE';
+        formErrorMsg.classList.remove('hidden');
+      } finally {
+        submitBtn.disabled = false;
+        submitText.textContent = 'Confirm Booking';
+        submitIcon.setAttribute('data-lucide', 'arrow-right');
+        submitIcon.classList.remove('animate-spin');
+        lucide.createIcons();
+      }
+    });
+
+    bookAnotherBtn.addEventListener('click', () => {
+      form.reset();
+      clearErrors();
+      addressGroup.classList.remove('visible');
+      addressInput.removeAttribute('required');
+      successBlock.classList.add('hidden');
+      form.classList.remove('hidden');
+    });
+
+    function animateCountUp(el, target, duration) {
+      let start = 0;
+      const stepTime = Math.abs(Math.floor(duration / target));
+      const timer = setInterval(() => {
+        start += Math.ceil(target / (duration / 50));
+        if (start > target) start = target;
+        el.textContent = start.toLocaleString();
+        if (start === target) clearInterval(timer);
+      }, 50);
+    }
+
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          
+          const statEl = entry.target.querySelector('#tests-stat');
+          if (statEl && !statEl.dataset.counted) {
+            statEl.dataset.counted = 'true';
+            animateCountUp(statEl, parseInt(statEl.dataset.target, 10), 1500);
+          }
+          revealObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+    document.querySelectorAll('.reveal, #home').forEach(el => revealObserver.observe(el));
+
+    // Sticky Mobile CTA Visibility Logic
+    const mobileCta = document.getElementById('mobile-cta');
+    const bookingContainer = document.getElementById('booking-container');
+    
+    // initially show it after scroll slightly
+    const ctaObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        // If the booking container is intersecting (visible on screen), hide the sticky CTA
+        if (entry.isIntersecting) {
+          mobileCta.classList.add('hidden-cta');
+        } else {
+          // Only show if we've scrolled past the hero section
+          if (window.scrollY > window.innerHeight * 0.5) {
+            mobileCta.classList.remove('hidden-cta');
+          }
+        }
+      });
+    }, { threshold: 0.1 });
+    
+    ctaObserver.observe(bookingContainer);
+
+    // Also handle scroll to show/hide appropriately before booking section
+    window.addEventListener('scroll', () => {
+      const bookingRect = bookingContainer.getBoundingClientRect();
+      const isBookingVisible = (bookingRect.top < window.innerHeight && bookingRect.bottom > 0);
+      
+      if (!isBookingVisible) {
+        if (window.scrollY > window.innerHeight * 0.5) {
+          mobileCta.classList.remove('hidden-cta');
+        } else {
+          mobileCta.classList.add('hidden-cta');
+        }
+      }
+    }, { passive: true });
+
+  });
+  </script>
+
+</body>
+</html>
